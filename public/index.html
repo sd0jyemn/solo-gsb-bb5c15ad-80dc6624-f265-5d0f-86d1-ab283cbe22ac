@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ABX 盲听测试</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>ABX 盲听测试</h1>
+    <span class="badge">本机运行 · 音频不外传</span>
+  </header>
+
+  <main>
+    <!-- ==================== 上传页 ==================== -->
+    <section id="view-upload" class="view">
+      <div class="card">
+        <h2>1. 上传两段音频</h2>
+        <p class="hint">
+          A、B 必须为<strong>同格式</strong>音频（相同扩展名，如均为 wav / flac / mp3）。
+          系统以两段音频中<strong>较短的时长</strong>作为统一时间轴，超出部分不会播放。
+        </p>
+
+        <div class="upload-grid">
+          <label class="dropzone" id="zone-a">
+            <input type="file" id="file-a" accept="audio/*,.wav,.flac,.mp3,.m4a,.aac,.ogg,.oga,.opus,.webm" hidden />
+            <span class="zone-title">参考音 A</span>
+            <span class="zone-file" id="label-a">点击选择文件…</span>
+            <span class="zone-meta" id="meta-a"></span>
+          </label>
+          <label class="dropzone" id="zone-b">
+            <input type="file" id="file-b" accept="audio/*,.wav,.flac,.mp3,.m4a,.aac,.ogg,.oga,.opus,.webm" hidden />
+            <span class="zone-title">参考音 B</span>
+            <span class="zone-file" id="label-b">点击选择文件…</span>
+            <span class="zone-meta" id="meta-b"></span>
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field">
+            题目数量
+            <input type="number" id="question-count" min="2" max="20" value="10" />
+          </label>
+        </div>
+
+        <p class="error" id="upload-error" hidden></p>
+
+        <button id="btn-create" class="primary" disabled>上传并生成随机题序</button>
+        <p class="hint" id="upload-progress" hidden>正在上传，音频较大时请稍候…</p>
+      </div>
+    </section>
+
+    <!-- ==================== 答题页 ==================== -->
+    <section id="view-test" class="view" hidden>
+      <div class="card">
+        <div class="test-head">
+          <h2>第 <span id="q-num">1</span> / <span id="q-total">10</span> 题</h2>
+          <span class="hint">X 到底是 A 还是 B？</span>
+        </div>
+
+        <!-- 三路切换 -->
+        <div class="tracks" role="tablist">
+          <button class="track" id="track-a" data-track="a" title="快捷键 1">
+            <span class="track-letter">A</span>
+            <span class="track-sub">参考音</span>
+          </button>
+          <button class="track x" id="track-x" data-track="x" title="快捷键 2">
+            <span class="track-letter">X</span>
+            <span class="track-sub" id="x-loading-sub">待判音频</span>
+          </button>
+          <button class="track" id="track-b" data-track="b" title="快捷键 3">
+            <span class="track-letter">B</span>
+            <span class="track-sub">参考音</span>
+          </button>
+        </div>
+
+        <!-- 播放控制：切轨保持位置与暂停状态 -->
+        <div class="player">
+          <button id="btn-play" class="play" title="空格">▶ 播放</button>
+          <input type="range" id="seek" min="0" max="1000" value="0" step="1" />
+          <span class="time"><span id="time-cur">0:00</span> / <span id="time-dur">0:00</span></span>
+        </div>
+
+        <!-- 作答 -->
+        <div class="answer">
+          <span>本题你的判断：</span>
+          <button class="ans" data-answer="A" title="快捷键 A">X = A</button>
+          <button class="ans" data-answer="B" title="快捷键 B">X = B</button>
+        </div>
+
+        <!-- 逐题导航 / 返回修改 -->
+        <div class="nav-dots" id="nav-dots"></div>
+
+        <div class="nav-row">
+          <button id="btn-prev">← 上一题</button>
+          <button id="btn-next">下一题 →</button>
+          <button id="btn-submit" class="primary">提交全部答案</button>
+        </div>
+        <p class="hint">可随时切换题目返回修改；提交前不会揭示任何一题的映射。</p>
+        <p class="error" id="test-error" hidden></p>
+      </div>
+    </section>
+
+    <!-- ==================== 结果页 ==================== -->
+    <section id="view-result" class="view" hidden>
+      <div class="card">
+        <h2>测试结果</h2>
+        <div class="score">
+          <span id="score-big">0/0</span>
+          <span id="score-pct">正确率 0%</span>
+        </div>
+        <p class="hint" id="score-verdict"></p>
+
+        <table class="result-table">
+          <thead>
+            <tr><th>题号</th><th>你的判断</th><th>X 实际是</th><th>结果</th></tr>
+          </thead>
+          <tbody id="result-body"></tbody>
+        </table>
+
+        <div class="nav-row">
+          <button id="btn-restart">再测一组（重新上传）</button>
+          <button id="btn-discard" class="danger-outline">删除本机音频与会话</button>
+        </div>
+        <p class="hint">答案提交后映射已一次性揭示，同一组音频不可重复作答。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    所有音频与会话数据仅保存在本机服务器进程的 <code>data/</code> 目录中，默认 24 小时后自动清理。
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

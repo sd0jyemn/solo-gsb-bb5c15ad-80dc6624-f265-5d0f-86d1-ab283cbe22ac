@@ -1,0 +1,17 @@
+{
+  "name": "abx-blindtest",
+  "version": "1.0.0",
+  "description": "本地音频 ABX 盲听 Web 应用（Node.js + Express + Web Audio API）",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node server/app.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}

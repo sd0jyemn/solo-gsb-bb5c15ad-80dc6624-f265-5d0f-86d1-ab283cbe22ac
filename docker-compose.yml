@@ -1,0 +1,12 @@
+services:
+  abx:
+    build: .
+    container_name: abx-blindtest
+    ports:
+      # 宿主机端口:容器端口；修改左侧端口即可换访问端口
+      - "${ABX_PORT:-3000}:3000"
+    volumes:
+      # 音频与会话数据落盘到本机 ./data，容器删除后数据仍在；
+      # 不希望保留可删除此挂载，数据将仅存在于容器内。
+      - ./data:/app/data
+    restart: unless-stopped
